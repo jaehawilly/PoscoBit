@@ -1,0 +1,18 @@
+package Pack;
+
+import java.util.*;
+
+public class Server {
+
+	public static void main(String[] args) {
+		System.out.println("Server Start");
+		new Scanner(System.in).nextInt();
+		System.out.println("Server End");
+	}
+
+}
+
+// 1. 접속을 할때마다 thread를 생성
+
+// 2. 처음부터 thread를 1개만 만들어 놓고 Linkedlist를 사용해서 소켓 번호를 저장해놓음
+// -> 게임에서 많이 사용(thread를 많이 만들 수 없는 환경이기 때문)

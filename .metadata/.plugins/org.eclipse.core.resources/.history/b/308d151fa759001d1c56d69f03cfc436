@@ -1,0 +1,32 @@
+package Pack;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.*;
+
+public class Client {
+
+	public static void main(String[] args) {
+		System.out.println("Client Start");
+		
+		Socket socket = new Socket();
+		
+		try {
+			System.out.println("숫자를 입력하면 접속을 시도합니다.");
+			new Scanner(System.in).nextInt();
+			
+			socket.connect(new InetSocketAddress("localhost", 5000));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		System.out.println("숫자를 입력하면 클라이언트를 종료합니다.");
+		new Scanner(System.in).nextInt();
+		System.out.println("Client End");
+	}
+
+}

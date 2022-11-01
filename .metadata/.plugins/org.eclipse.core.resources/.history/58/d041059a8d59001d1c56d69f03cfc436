@@ -1,0 +1,13 @@
+package Pack;
+
+import java.util.*;
+
+public class Client {
+
+	public static void main(String[] args) {
+		System.out.println("Client Start");
+		new Scanner(System.in);
+		System.out.println("Client End");
+	}
+
+}
