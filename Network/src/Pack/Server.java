@@ -12,89 +12,167 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.*;
 
 class ClientThread extends Thread{
 	Socket socket;
+	int num;
+	LinkedList<Client> clients = new LinkedList<>();
+	
 	ClientThread() {}
-	ClientThread(Socket socket) {
+	ClientThread(Socket socket, int num, LinkedList<Client> clients) {
 		this.socket=socket; // 주입(injection)
+		this.num=num;
+		this.clients=clients;
 	}
 	public void run() {
 		try {
 			
-			
 			while(true) {
-				InputStream is = socket.getInputStream();
 				
+				//------------------------- Input---------------------------//
+				InputStream is = socket.getInputStream();
 				// read : 블로킹 함수
 				// 4096byte까지는 데이터 송수신 시에 데이터 loss가 없다.
-				byte[] data = new byte[512];
-				int size = is.read(data);
+				byte[] receiveData = new byte[512];
+				int length = is.read(receiveData);
 				
-				// 서버 종료 버튼을 눌러서 종료 시켰을 때 size=-1 exception 처리 해줘야함
-				if(size==-1) {
-					System.out.println("클라이언트가 접속 종료하였습니다.");
-					break;
-				}
-				System.out.println(size);
-				// tiger
-				String result = new String(data, 0, size, "utf-8");
+				String result = new String(receiveData, 0, length, "utf-8");
 				System.out.println(result);
 				
+				//------------------------- Output---------------------------//
+				for(Client client : clients) {
+//					client.getReceiveMessage(result);
+					
+					OutputStream os = socket.getOutputStream();
+					os.write(receiveData);
+					os.flush();
+				}
+				
+				
+				
+				
+				System.out.println(result); // 서버에 메시지 출력
+				
+				
+				// 서버 종료 버튼을 눌러서 종료 시켰을 때 size=-1 exception 처리 해줘야함
+				if(length==-1) {
+					System.out.println("클라이언트" + num + "가 접속 종료하였습니다.");
+					break;
+				}
 			}
-			
-			
 		} catch (IOException e) {
-			System.out.println("호랑이");
 //			e.printStackTrace();
 		}
 	}
 }
 
 class ConnectThread extends Thread{
+	// 클라이언트들을 담는 링크드리스트형 객체
+	LinkedList<Client> clients = new LinkedList<>();
+	ServerSocket serverSocket;
+	
 	public void run() {
 		try {
-			ServerSocket serverSocket = new ServerSocket();
-			serverSocket.bind(new InetSocketAddress("localhost", 5000));
+			serverSocket = new ServerSocket();
+			serverSocket.bind(new InetSocketAddress("192.168.0.19", 5000));
+			makeClients();
 			
-			// 1차 블로킹이 풀린다.
-			System.out.println("누군가를 기다림");
-			Socket socket = serverSocket.accept();
-			
-			// 스레드 생성
-			ClientThread clientThread = new ClientThread(socket);
-			clientThread.start();
-			
-			System.out.println("누군가 접속됨");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	public void makeClients() {
+		while(true) {
+			// 1차 블로킹이 풀린다.
+			try {
+				Socket socket = serverSocket.accept();
+				int num = clients.size()+1;
+				clients.add(new Client());
+				System.out.printf("%d번 클라이언트가 접속하였습니다.\n", num);
+				
+				// 스레드 생성
+				ClientThread clientThread = new ClientThread(socket, num, clients);
+				clientThread.start();					
+
+			} catch (Exception e) {
+				
+			}
+		}
+	}
+	
+	// 서버의 작동을 중지시키는 메소드.
+	// 서버를 완전히 중지시키는 것이기 때문에 모든 클라이언트에 대한 정보를 끊어준다.
+//	public void stopServer() {
+//		try {
+//			// stopServer는 서버를 완전하게 중지를 시키는 것이기 때문에
+//			// 모든 클라이언트들에 대한 정보를 끊어준다.
+//			
+//			// 현재 작동중인 모든 소켓 닫기
+//			Iterator<Client> iterator = clients.iterator();
+//			// iterator로 하나씩 접근
+//			while(iterator.hasNext()) {
+//				Client client = iterator.next();
+//				// 닫아줌.
+//				client.socket.close();
+//				// iterator에서도 닫아준 소켓 제거
+//				iterator.remove();
+//			}
+//			// 서버 소켓 객체 닫기
+//			if(serverSocket != null && !serverSocket.isClosed()) {
+//				serverSocket.close();
+//			}
+//			System.out.println(clients.size());
+//			System.out.println("서버 종료되었습니다.");
+////			// 쓰레드 풀 종료하기
+////			if(threadPool != null && !threadPool.isShutdown()) {
+////				// shutdown으로 자원할당 해제
+////				threadPool.shutdown();
+////			}
+//		} catch (Exception e) {
+//		}
+//	}
 }
 public class Server extends Application{
+	Button btn1;
+	Button btn2;
+	ConnectThread connectThread;
 	@Override
 	public void start(Stage arg0) throws Exception {
 		VBox root = new VBox();
 		root.setPrefSize(400, 300);
 		root.setSpacing(10);
 		//-----------------------------------------------------------
-		
-		Button btn1 = new Button("서버오픈");
+		btn1 = new Button("서버오픈");
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				ConnectThread connectThread = new ConnectThread();
+				connectThread = new ConnectThread();
 				connectThread.start();
-				
+				btn1.setDisable(!btn1.isDisable());
 			}
 		});
 		
+		btn2 = new Button("서버종료");
+		btn2.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 		
+		arg0.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent arg0) {
+				// TODO Auto-generated method stub
+				System.exit(0);
+			}
+		});
 		
-		
-		root.getChildren().addAll(btn1);
+		root.getChildren().addAll(btn1, btn2);
 		//-----------------------------------------------------------
 		Scene scene = new Scene(root);
 		arg0.setScene(scene);
@@ -104,6 +182,7 @@ public class Server extends Application{
 	public static void main(String[] args) {
 		System.out.println("Server Start");
 		launch();
+		
 		System.out.println("Server End");
 		
 //		try {

@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 
 
 
-
 /*
 //ex74-5)
 class Tiger extends Thread{
