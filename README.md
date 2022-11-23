@@ -1,1 +1,1 @@
-# PoscoBit_Java
+# Posco_Bit
