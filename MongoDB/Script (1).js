@@ -1,12 +1,232 @@
+db.orders.drop();
+
+db.orders.insertMany( [
+   { _id: 0, name: "Pepperoni", size: "small", price: 19,
+     quantity: 10, date: ISODate( "2021-03-13T08:14:30Z" ) },
+   { _id: 1, name: "Pepperoni", size: "medium", price: 20,
+     quantity: 20, date : ISODate( "2021-03-13T09:13:24Z" ) },
+   { _id: 2, name: "Pepperoni", size: "large", price: 21,
+     quantity: 30, date : ISODate( "2021-03-17T09:22:12Z" ) },
+   { _id: 3, name: "Cheese", size: "small", price: 12,
+     quantity: 15, date : ISODate( "2021-03-13T11:21:39.736Z" ) },
+   { _id: 4, name: "Cheese", size: "medium", price: 13,
+     quantity:50, date : ISODate( "2022-01-12T21:23:13.331Z" ) },
+   { _id: 5, name: "Cheese", size: "large", price: 14,
+     quantity: 10, date : ISODate( "2022-01-12T05:08:13Z" ) },
+   { _id: 6, name: "Vegan", size: "small", price: 17,
+     quantity: 10, date : ISODate( "2021-01-13T05:08:13Z" ) },
+   { _id: 7, name: "Vegan", size: "medium", price: 18,
+     quantity: 10, date : ISODate( "2021-01-13T05:10:13Z" ) },
+   { _id: 8, name: "Vegan", size: "medium", price: 18,
+   quantity: 10, date : ISODate( "2021-01-13T05:10:13Z" ) }
+] )
+db.people.find( {} );
+
+// 문제) 중간 크기의 피자를 이름별로 총 판매 수량을 집계하라.
+// 1. 
+db.orders.aggregate([]);
+// 2. medium 크기의 피자 필터링( {$match:인수} )
+db.orders.aggregate([
+    {$match:{size:'medium'}}
+]);
+// 3. 
+// {$group:인수}
+// {$group:{첫키:값, 둘키:값}}
+// 첫키:값 --> 첫키의 값으로 그룹 설정
+// 둘키:값 --> 둘키의 값으로 통계함수 설정
+db.orders.aggregate([
+    {$match:{size:'medium'}},
+    {
+        $group:
+        {
+            _id:'$name',
+            secondKey:{$sum:'$quantity'}
+        }
+    }
+]);
+
+
+// 두 날짜 사이에 판매된 총 피자 주문 금액과 평균 주문 수량 계산
+// 1. size = medium
+db.orders.aggregate([
+    {$match:{size:'medium'}}
+]);
+
+// 2. 15 < quantity < 45
+db.orders.aggregate([
+    {
+        $match:
+        {
+            quantity:{$gt:15, $lt:45}
+        }
+    }
+]);
+
+// 3. x날짜 < date < y날짜
+db.orders.aggregate([
+    {
+        $match:
+        {
+            date:{$gt:new ISODate('2022-01-01'), $lt:new ISODate('2022-01-30')}
+        }
+    }
+]);
+
+// 4. size : medium or large
+// {$or:[{size:'medium'}, {size:'large'}]}
+db.orders.aggregate([
+    {
+        $match:
+        {
+            $or:[{size:'medium'}, {size:'large'}]
+        }
+    }
+]);
+
+// 5. (A and B) or C
+// (90 < 프로그램 시험점수 < 100) or 전공='컴공'
+db.orders.aggregate([
+    {
+        $match:
+        {
+            $or:[{quantity:{$gt:15, $lt:45}}, {size:'large'}]
+        }
+    }
+]);
+
+// 6. and 조건형식1
+db.orders.aggregate([
+    {$match:{name:'Cheese'}},
+    {$match:{quantity:{$gt:13}}},
+]);
+
+// 6. and 조건형식2
+db.orders.aggregate([
+    {
+        $match:{$and:[{name:'Cheese'}, {quantity:{$gt:13}}]}
+    }
+]);
+
+// 6. and 조건형식3
+db.orders.aggregate([
+    {
+        $match:
+        {
+            name:'Cheese',
+            quantity:{$gt:13}
+        }
+    }
+]);
+
+db.orders.aggregate([
+    {
+      $match:
+      {
+         "date": { $gte: new ISODate( "2020-01-30" ), $lt: new ISODate( "2022-01-30" ) }
+      }
+   },
+   {
+      $group:
+      {
+         _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+         A: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+         B: { $avg: "$quantity" }
+      }
+   },
+]);
+
+
+
+
+
+
+
+
+
+
+
+/*
 db.people.drop();
+db.people.insertMany([
+    {name:'호랑이1', age: 10, sal: 100},
+    {name:'호랑이2', age: 20, sal: 200},
+    {name:'호랑이3', age: 30, sal: 300},    
+]);
+
+// 1. find( query, project, options );
+db.people.find( {}, {_id:0, name:true, age: true} );
+
+// 2. 
+db.people.aggregate([
+
+]);
+
+// 3. 
+db.people.aggregate([
+    {$project: { _id: 0, name: 1, age: 1} }
+]);
+
+// 4. 
+db.people.aggregate([
+    {$project: { key: '호랑이', key2: '코끼리'} }
+]);
+
+// 5. 
+db.people.aggregate([
+    {$project: { key: '호랑이', key2: '코끼리', age: true } }
+]);
+
+// 6. 
+// {$함수:인수}
+// '$필드명'
+db.people.aggregate([
+    {$project: { nickName: '$name', age: 1, name: 1 } }
+]);
+
+// 7. 
+db.people.aggregate([
+    {$project:
+         { nickName: {$concat:['$name', ' : 동물']} }
+    }
+]);
+
+// 8. 
+db.people.aggregate([
+    {$project: { key1: ISODate('2022-12-01T16:30:20Z'), name: 1}}
+]);
+
+// 9. dateToString { format:'%Y-%m-%d'} ISODate('2022-12-01T16:30:20Z')
+db.people.aggregate([
+    {
+        $project:
+        {
+            key1:
+            {
+                $dateToString:
+                {
+                      format:'%Y-%m-%d',
+                      date:ISODate('2022-12-01T16:30:20Z')
+                }
+            }
+        }
+    }
+]);
+*/
 
 
+
+
+/*
 // id : 게시판 종류
 // title : 글제목
 // content : 글 내용
 // author : 작성자
 // insert
-info = db.people.insert( {id:'자유게시판', title:'가입합니다', content:'안녕하세요', author:'호랑이', } );
+info = db.people.insert( {
+    id:'자유게시판',
+    title:'가입합니다', 
+    content:'안녕하세요', 
+    author:'호랑이', } );
 
 // insertMany
 db.people.insertMany([ 
@@ -15,16 +235,67 @@ db.people.insertMany([
 ]);
 
 // 호랑이를 못찾을 경우 무시됨
-db.people.updateOne({author:'호랑이'},{$set:{comment : '어서오세요'}});-
+db.people.updateOne({author:'호랑이'},{$set:{comments : '어서오세요'}});-
 
-db.people.updateOne({author:'코끼리'},{$set:{comment : {author:'앵무새', content:'어서오세요'} }});
+db.people.updateOne({author:'코끼리'},{$set:{comments : {author:'앵무새', content:'어서오세요'} }});
 
-db.people.updateOne({author:'독수리'},{$set:{comment : [{author:'앵무새', content:'어서오세요'},
-    {author:'사자', content:'어서오세요'}
-    ] }});
+db.people.updateOne({author:'독수리'},{$set:{comments : [{author:'앵무새', content:'어서오세요'}] }});
+
+db.people.updateOne({author:'독수리'},{$set:{comments : [{author:'타조', content:'어서가세요'}] }});
+
+db.people.deleteOne({ author:'독수리'});
+
+info = db.people.insert( {id:'자유게시판', title:'가입합니다4', content:'안녕하세요4', author:'독수리', } );
+
+db.people.updateOne(
+    {author:'독수리'},
+    {$push:{ comments:{author:'앵무새', content:'어서오세요'}}}
+);
+
+db.people.updateOne(
+    {author:'독수리'},
+    {$push:{ comments:{author:'타조', content:'어서가세요'}}}
+);
+
+db.people.updateOne(
+    {author:'호랑이'},
+    {$set:{title:'탈퇴합니다', content:'그동안 즐거웠음'}}
+);
+
+db.people.deleteOne( {author: '호랑이'} );
+
+db.people.count(); // Deprecated
+db.people.countDocuments(); // 개수
+
+db.people.updateOne(
+    {author:'독수리'},
+    {$set:{'comments.1':{author:'타조', content:'죄송합니다'}}}
+);
+
+db.people.updateOne(
+    {author:'독수리', 'comments.author': '타조'},
+    {$set: { 'comments.$.content': '죄송합니다2'} } // $를 넣음으로써 갱신
+);
+
+db.people.updateOne(
+    {author:'독수리'},
+    {$pull: { comments:{author:'타조'}} }
+);
+
+db.people.updateMany(
+    {},
+    {$set:{upvote: 0}}
+);
+
+db.people.updateOne(
+    {author:'독수리'},
+    {$inc: {upvote: 1} }
+);
 
 
 db.people.find({}).toArray();
+*/
+
 
 
 
