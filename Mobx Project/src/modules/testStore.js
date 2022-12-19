@@ -9,6 +9,7 @@ const testStore = observable({
     // action
     writeCode(code) {
         this.test.code = code;
+        console.log('code');
     }
 });
 

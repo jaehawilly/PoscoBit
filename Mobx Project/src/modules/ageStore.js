@@ -1,5 +1,12 @@
 import { observable } from 'mobx';
 
+// class AgeStore1 {
+
+//     @observable
+//     age = 5
+// }
+
+
 const AgeStore = observable({
     // state
     age: 0,
