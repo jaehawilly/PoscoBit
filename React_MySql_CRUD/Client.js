@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 
-class App extends Component {
+class Client extends Component {
   constructor(props) {
     super(props);
     this.state = { member: [], name: '', age: '', mid: '' };
@@ -80,4 +80,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Client;
