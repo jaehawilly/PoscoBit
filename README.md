@@ -1,1 +1,1 @@
-# Posco Bit
+# PoscoBit
