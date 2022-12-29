@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+ mvc:
+   view:
+     prefix: /WEB-INF/views/
+     suffix: .jsp
+ rabbitmq:
+   host: localhost
+   port: 5672
+   username: guest
+   password: guest
+
+
+
+
+#server.port = 8080
+#spring.mvc.view.prefix = /WEB-INF/views/
+#spring.mvc.view.suffix = .jsp
+#spring.rabbitmq.host = localhost
+#spring.rabbitmq.port = 5672
