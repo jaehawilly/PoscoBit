@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+      
+
+# 코딩에서 tiger라는 식별자를 사용하면
+# localhost:8083 or localhost:8084로 해석하세요.
+tiger:
+  ribbon:
+    listOfServers: localhost:8083, localhost:8084
