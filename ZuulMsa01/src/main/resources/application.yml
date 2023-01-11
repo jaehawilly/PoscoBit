@@ -26,7 +26,7 @@ spring:
       prefix: /WEB-INF/views/
       suffix: .jsp
   application:
-    name: ZuulMsa02
+    name: ZuuLMsa01
     
 eureka:
   instance:
