@@ -3,6 +3,7 @@ package Pack;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,12 +27,25 @@ public class Apple {
 	
 }
 
+// ==================SimpleFilter====================
+//@RestController
+//@RequestMapping("/bpp")
+//class BppController{
+//	@GetMapping("/{token}")
+//	public String f1(@PathVariable Integer token) {
+//		System.out.println("bpp/" + token);
+//		return "재하 " + token;
+//	}
+//}
+
+//==================AuthPostFilter====================
 @RestController
 @RequestMapping("/bpp")
-class BppController{
-	@GetMapping("/{token}")
-	public String f1(@PathVariable Integer token) {
-		System.out.println("bpp/" + token);
-		return "재하 " + token;
+class ZuulMsa02Controller {
+	
+	@PostMapping
+	public String f1() {
+		System.out.println("bpp");
+		return "bpp";
 	}
 }

@@ -25,28 +25,7 @@ public class Apple {
 		return "AppleView";
 	}
 }
-
-//@FeignClient(name = "noName", url = "http://localhost:8765")
-//interface TestClient {
-//	@GetMapping("/app/{id}")
-//	String myFunc(@PathVariable Integer id);
-//}
-//
-//@RestController
-//@RequestMapping("/app")
-//class AppController {
-//	@Autowired
-//	TestClient testClient;
-//	
-//	@GetMapping("/{id}")
-//	public String f1(@PathVariable Integer id) {
-//		System.out.println("app/" + id);
-//		
-//		String str = testClient.myFunc(id);
-//		
-//		return "app : " + str;
-//	}
-//}
+// ============================app=============================
 
 @FeignClient(name = "noName", url = "http://localhost:8765")
 interface TestClient {
@@ -69,6 +48,8 @@ class AppController {
 		return "app : " + str;
 	}
 }
+
+//============================bpp=============================
 
 @FeignClient(name = "noName2", url = "http://localhost:8765")
 interface TestClient2 {
