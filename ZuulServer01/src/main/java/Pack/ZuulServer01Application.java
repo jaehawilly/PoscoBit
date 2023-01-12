@@ -18,11 +18,6 @@ import org.springframework.context.annotation.Bean;
 @EnableEurekaClient			// @EnableDiscoveryClient
 public class ZuulServer01Application {
 	
-	@Bean
-	SimpleFilter simpleFilter() {
-		return new SimpleFilter();
-	}
-	
 	public static void main(String[] args) {
 		SpringApplication.run(ZuulServer01Application.class, args);
 	}
